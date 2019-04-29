@@ -1,3 +1,9 @@
+class Component {
+	static isReactComponent = true;
+	constructor(props) {
+		this.props = props;
+	}
+}
 function ReactElement(type, props) {
 	let element = {type, props};
 	return element;
@@ -18,5 +24,6 @@ function createElement(type, config, children) {
 }
 
 export default {
-	createElement
+	createElement,
+	Component
 }

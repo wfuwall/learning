@@ -3,7 +3,19 @@ function render(element, parentNode) {
 		parentNode.appendChild(document.createTextNode(element));
 		return;
 	}
-	let {type, props} = element;
+	let type, props;
+	type = element.type;
+	props = element.props;
+	if (type.isReactComponent) { // 说明是类组件
+		console.log(true)
+		let returnElement = new type(props).render();
+		type = returnElement.type;
+		props = returnElement.props;
+	}else if (typeof type === 'function') { // 函数组件
+		let returnElement = type(props);
+		type = returnElement.type;
+		props = returnElement.props;
+	}
 	let domElement = document.createElement(type); // 创建元素
 	for (let propName in props) { // 循环props，对特殊的属性名进行特殊处理
 		if (propName === 'className') {
