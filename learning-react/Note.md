@@ -27,3 +27,13 @@ React.createElement('h1', {id: 'myTitle', className: 'title'}, 'hello', React.cr
 	- 收集属性对象 props
 	- 把属性对象传给构造函数，并返回一个类的实例
 	- 最后调用类的render方法，获取返回值，也就是react元素
+
+### react的特点
+- react的setState有两个特点：1、是修改state的状态； 2、重新执行render函数
+- 不能直接修改state状态，修改state的唯一途径就是通货setState函数
+- 修改this指针的三种方法：1、使用bind函数 2、使用匿名函数 3、使用类的属性
+- this.forceUpdate()调用这个方法会强制执行render函数
+- 调用setState的时候，其实状态没有直接改变，而是放在了一个队列中。setState有可能是异步的
+
+### 纯函数
+- 纯函数的特点：1、不能改变入参 2、不能影响作用域之外的变量

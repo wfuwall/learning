@@ -1,19 +1,60 @@
-import React from './react';
-import ReactDOM from './react-dom';
-
-// <h1 id="myTitle" className="title" style={{color: 'red', fontSize: '50px'}}>hello <span>world</span></h1>
-function Welcome(props) {
-	return React.createElement('h1', {}, 'hello', props.name, props.age)
-}
-class Welcome1 extends React.Component{
-	constructor(props) {
-		super(props);
+import React from 'react';
+import ReactDOM from 'react-dom';
+// ref的用法 1、第一种用法 ref=字符串
+class Sum extends React.Component{
+	add = () => {
+		let numA = this.refs.numA.value;
+		let numB = this.refs.numB.value;
+		let result = parseFloat(numA) + parseFloat(numB);
+		this.refs.result.value = result;
 	}
 	render() {
-		return React.createElement('h1', {}, 'hello', this.props.name, this.props.age)
+		return (
+			<>
+				<input type="number" ref="numA"/>+<input type="number" ref="numB"/>
+				<button onClick={this.add}>=</button><input type="number" ref="result"/>
+			</>
+		)
 	}
 }
-// let element = React.createElement('h1', {id: 'myTitle', className: 'title', style: {color: 'red', fontSize: '50px'}}, 'hello', React.createElement('span', {}, 'world'));
-// console.log(element);
-let element = React.createElement(Welcome1, {name: 'world', age: 10});
-ReactDOM.render(element, document.getElementById('root'));
+// 2、第二种用法 ref=函数
+class Sum1 extends React.Component{
+	add = () => {
+		let numA = this.numA.value;
+		let numB = this.numB.value;
+		let result = parseFloat(numA) + parseFloat(numB);
+		this.result.value = result;
+	}
+	render() {
+		return (
+			<>
+				<input type="number" ref={input => this.numA = input}/>+<input type="number" ref={input => this.numB = input}/>
+				<button onClick={this.add}>=</button><input type="number" ref={input => this.result = input}/>
+			</>
+		)
+	}
+}
+// 第三种用法 React.createRef() 函数
+class Sum2 extends React.Component{
+	constructor() {
+		super();
+		this.numA = React.createRef();
+		this.numB = React.createRef();
+		this.result = React.createRef();
+	}
+	add = () => {
+		let numA = this.numA.current.value;
+		let numB = this.numB.current.value;
+		let result = parseFloat(numA) + parseFloat(numB);
+		this.result.current.value = result;
+	}
+	render() {
+		return (
+			<>
+				<input type="number" ref={this.numA}/>+<input type="number" ref={this.numB}/>
+				<button onClick={this.add}>=</button><input type="number" ref={this.result}/>
+			</>
+		)
+	}
+}
+ReactDOM.render(<Sum2/>, document.getElementById('root'));
