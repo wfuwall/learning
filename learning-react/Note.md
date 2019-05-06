@@ -34,6 +34,12 @@ React.createElement('h1', {id: 'myTitle', className: 'title'}, 'hello', React.cr
 - 修改this指针的三种方法：1、使用bind函数 2、使用匿名函数 3、使用类的属性
 - this.forceUpdate()调用这个方法会强制执行render函数
 - 调用setState的时候，其实状态没有直接改变，而是放在了一个队列中。setState有可能是异步的
+- 受控组件和非受控组件
+	- 受控组件是DOM元素的值受React状态控制
+	- 非受控组件是DOM元素的值存在DOM元素的内部，不受React的状态控制
+- setState可能是异步的
+	- 当调用setState的时候，会先把新的状态newState存入到pending队列中
+	- 判断是否处于批量更新batch update状态，如果是批量更新状态，会先保存组件于dirtyComponent脏组件中； 如果不是批量更新状态，则遍历所有的dirtyComponent，调用组件的updateComponent方法更新状态
 
 ### 纯函数
 - 纯函数的特点：1、不能改变入参 2、不能影响作用域之外的变量

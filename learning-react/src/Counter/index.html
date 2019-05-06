@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<body>
+	<!-- 直接http-server启动这个文件 -->
+	<div id="counter-app"></div>
+	<script src="index.js"></script>
+	<script>
+		let app = document.getElementById('counter-app');
+		new Counter({name: '点一点'}).mount(app);
+	</script>
+</body>
+</html>
