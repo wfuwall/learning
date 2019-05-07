@@ -1,0 +1,5 @@
+### 为什么请求要放在componentDidMount中
+- 如果放在constructor中，如果报错了或者请求太慢，会导致页面渲染不出来
+- ssr服务端渲染，componentWillMount会执行两次
+- react16之后采用了 fiber架构，类似componentWillMount的生命周期钩子可能会执行多次
+- 只有componentDidMount生命周期钩子确定只会调用一次，因此请求要放在componentDidMount生命周期中。
