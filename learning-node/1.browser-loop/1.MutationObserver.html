@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MutationObserver</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script> 
+    let observer = new MutationObserver(function() {
+      console.log('节点已经全部更新完毕');
+      console.log(app.children.length);
+    });
+    let app = document.getElementById('app');
+    observer.observe(app, {
+      childList: true // 监控节点的更新
+    })
+    for(let i = 0; i < 10; i++) {
+      let p = document.createElement('p');
+      app.appendChild(p);
+    }
+    for(let i = 0; i < 10; i++) {
+      let span = document.createElement('span');
+      app.appendChild(span);
+    }
+  </script>
+</body>
+</html>

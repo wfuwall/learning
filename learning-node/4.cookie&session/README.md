@@ -1,0 +1,12 @@
+### localStorage sessionStorage cookie session 的区别
+- localStorage 本地存储 一直存在，不能跨域，存储的地方是浏览器 最大存储5M
+- sessionStorage不关闭浏览器就一直存活
+- cookie的特性
+  - cookie 都是 "name=hello; age=100" 键值对之间以 "; "分隔的
+  - cookie的domain指定的在哪个域下cookie可以使用 path一般不会设置，会起到路径限制的作用
+  - expires 绝对时间  max-age 相对时间
+  - 浏览器每次请求时都会携带上cookie
+  - cookie可以加密，但是不应该存储敏感信息, cookie存放不敏感信息，因为不安全。(加盐)
+  - 不能跨域设置cookie，但是可以一级域名和二级域名公用， 默认最大是4k。
+  - cookie可以前端设置，也可以后端设置，后端设置后会放到浏览器（后端设置可以设置前端是否可以更改）
+- session 比较安全 是存放在服务器上的（session是基于cookie的）

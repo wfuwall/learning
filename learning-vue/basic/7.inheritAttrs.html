@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>inheritAttrs 属性的用法</title>
+</head>
+<body>
+  <div id="app">
+    <my-button :content="content" :color="color"></my-button>
+  </div>
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script>
+    let vm = new Vue({
+      el:'#app',
+      data: {
+        content: '点我啊',
+        color: 'red'
+      },
+      // inheritAttrs 的默认值是true，如果设置为false, 其子组件没有接收的属性比如color，不会显示在属性上
+      components: {
+        'MyButton': {
+          props: ['content'],
+          inheritAttrs: true,
+          template: `<button>{{content}}</button>`,
+          mounted () {
+            console.log(this.$attrs);
+          }
+        }
+      }
+    })
+  </script>
+</body>
+</html>

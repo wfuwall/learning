@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>$parent 和 $children</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    .menu-list{
+      display: flex;
+      flex-direction: column;
+      width: 100px;
+    }
+    .menu-item{
+      width: 100px;
+      line-height: 40px;
+      text-align: center;
+      background: rgb(48, 65, 86);
+      color: rgb(191, 203, 217);
+      cursor: pointer;
+    }
+    .content{
+      width: 100px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      background: #1f2d3d;
+      color: rgb(191, 203, 217);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <menu-list>
+      <menu-item title="vue">
+        <p class="content">vue1</p>
+        <p class="content">vue2</p>
+        <p class="content">vue3</p>
+      </menu-item>
+      <menu-item title="react">
+        <p class="content">react1</p>
+        <p class="content">react2</p>
+      </menu-item>
+      <menu-item title="angular">
+        <p class="content">angular1</p>
+        <p class="content">angular2</p>
+      </menu-item>
+    </menu-list>
+  </div>
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script>
+    // 通过$parent、$children实现折叠菜单效果 _uid是组件的唯一id标识
+    Vue.component('MenuList', {
+      methods: {
+        toggleChild(uid) {
+          console.log(this.$children);
+          this.$children.forEach(child => {
+            if (child._uid !== uid) {
+              child.showList = false;
+            }
+          })
+        }
+      },
+      template: `<div class="menu-list">
+                  <slot></slot>
+                 </div>`
+    });
+    Vue.component('MenuItem', {
+      props: {
+        title: {
+          type: String,
+          default: ''
+        }
+      },
+      data() {
+        return{
+          showList: false
+        }
+      },
+      methods: {
+        bindToggle() {
+          this.showList = !this.showList;
+          this.$parent.toggleChild(this._uid);
+        }
+      },
+      template: `<div class="menu-item">
+                  <div class="title" @click="bindToggle">{{title}}</div> 
+                  <div v-show="showList">
+                    <slot></slot>  
+                  </div>
+                 </div>`
+    })
+    let vm = new Vue({
+      el: '#app',
+      
+    }) 
+  </script>
+</body>
+</html>

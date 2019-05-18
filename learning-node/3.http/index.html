@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>http服务</title>
+</head>
+<body>
+  <div id="app">hello world</div>
+  <script>
+    let xhr = new XMLHttpRequest();
+    // 如果我们使用非简单请求, 如 put delete，或者传递了一个自定义的请求头， 一般会伴随着options预检查
+    xhr.open('PUT', 'http://localhost:3000/userlist', true);
+    xhr.responseType = 'json';
+    xhr.setRequestHeader('token', 123);
+    document.cookie = 'token=100'; // 默认跨域是不支持cookie的
+    xhr.withCredentials = true; // 强制携带cookie
+    xhr.onreadystatechange = function() {
+      if (xhr.status === 200 && xhr.readyState === 4) {
+        console.log(xhr.response, 1111)
+      }
+    }
+    xhr.send();
+  </script>
+</body>
+</html>

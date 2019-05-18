@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>attrs和listeners</title>
+</head>
+<body>
+  <div id="app">
+    <my-button :content="content" :color="color" :class="{'a': true}" @click="clickFn" @mouseup="mouseupFn"></my-button>
+  </div>
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script>
+    Vue.component('MyButton',{
+      template: `<div><button v-on="$listeners">{{$attrs.content}}</button></div>`,
+      created() {
+        console.log(this.$attrs); 
+        console.log(this.$listeners);
+      },
+    })
+    let vm = new Vue({
+      el:'#app',
+      data: {
+        content: '点我啊',
+        color: 'red'
+      },
+      methods: {
+        clickFn() {
+          alert('clickFn');
+        },
+        mouseupFn() {
+          alert('mouseupFn')
+        }
+      }
+    })
+  </script>
+</body>
+</html>

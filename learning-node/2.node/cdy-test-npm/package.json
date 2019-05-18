@@ -1,0 +1,9 @@
+{
+  "name": "cdy-test-npm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "script": {},
+  "bin": {
+    "cdy": "./index.js"
+  }
+}

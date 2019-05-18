@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>自定义指令</title>
+</head>
+<body>
+  <div id="app">
+    <input type="text" v-split.3="msg" v-focus>
+  </div>
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script>
+    Vue.directive('focus', {
+      inserted(el) {
+        el.focus();
+      }
+    })
+    // <input type="text" v-split.3="msg">
+    Vue.directive('split', {
+      update(el, binding, vnode) {
+        let ctx = vnode.context;
+        el.value = ctx[binding.expression];
+      },
+      bind(el, binding, vnode) {
+        let [, len] = binding.rawName.split('.');
+        let ctx = vnode.context;
+        el.addEventListener('input', (e) => { // 监听输入框输入的时候
+          let val = e.target.value.slice(0, len);
+          ctx[binding.expression] = val;
+          el.value = val;
+        })
+        // 赋予默认值
+        el.value = ctx[binding.expression].slice(0,3);
+      }
+    })
+
+    //  <input type="text" v-model="msg" v-split.3="msg">
+    // 默认函数形式  ＝ update ＋ bind
+    // inserted 时机会比bind晚一些，被绑定元素插入父节点时调用
+    // Vue.directive('split',{
+    //   bind(el, binding, vnode) { // 只调用一次，指令第一次绑定到元素时调用
+    //     let [, len] = binding.rawName.split('.');
+    //     let val = el.value.slice(0, len);
+    //     let ctx = vnode.context; // 获取当前输入框所在的上下文
+    //     ctx[binding.expression] = val;
+    //   },
+    //   update (el, binding, vnode) { // 所在组件的 VNode 更新时调用
+    //     let [, len] = binding.rawName.split('.');
+    //     let val = el.value.slice(0, len);
+    //     let ctx = vnode.context; // 获取当前输入框所在的上下文
+    //     ctx[binding.expression] = val;
+    //   }
+    // })
+
+
+    // Vue.directive('split', function(el, binding, vnode) {
+    //   let [, len] = binding.rawName.split('.');
+    //   let val = el.value.slice(0, len);
+    //   let ctx = vnode.context; // 获取当前输入框所在的上下文
+    //   ctx[binding.expression] = val;
+    // })
+    let vm = new Vue({
+      el: '#app',
+      data: {
+        msg: '12345'
+      }
+    })
+  </script>
+</body>
+</html>

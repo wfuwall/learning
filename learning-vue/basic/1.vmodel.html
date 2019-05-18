@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>select radio checkbox使用</title>
+</head>
+<body>
+  <div id="app">
+    <!-- select的multiple属性是多选 -->
+    <select v-model="selectValue">
+      <option value="0" disabled>请选择</option>
+      <option v-for="(option, index) in selectList" :value="option.id">{{option.value}}</option>
+    </select>
+    <p>当前选择的是：{{selectValue}}</p>
+    <br/>
+    <!-- radio 可以通过v-model来分组 -->
+    <p>
+      男：<input type="radio" v-model="radioValue" value="男"/>
+      女：<input type="radio" v-model="radioValue" value="女"/>
+    </p>
+    <p>
+      性别是:{{radioValue}}
+    </p>
+    <br/>
+    <!-- checkbox -->
+    <p>
+      游泳：<input type="checkbox" v-model="checkboxValue" value="游泳">
+      电影：<input type="checkbox" v-model="checkboxValue" value="电影">
+      音乐：<input type="checkbox" v-model="checkboxValue" value="音乐">
+    </p>
+    <p>
+      爱好有：{{checkboxValue}}
+    </p>
+  </div>
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script>
+    let vm = new Vue({
+      data: {
+        checkboxValue: [], 
+        radioValue: '男',
+        selectValue: 0,  
+        selectList: [{id: 1, value: '菜单1'}, {id: 2, value: '菜单2'}, {id: 3, value: '菜单3'}]
+      }
+    }).$mount('#app');
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>filter过滤器</title>
+</head>
+<body>
+  <div id="app">
+    {{msg | capital(2)}}
+  </div>
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script>
+    // 过滤器并不会改变原有数据
+    Vue.filter('capital', function(value, len){
+      return value.slice(0, len).toUpperCase() + value.slice(len);
+    })
+    let vm = new Vue({
+      el:'#app',
+      data: {
+        msg: 'hello'
+      }
+    })
+  </script>
+</body>
+</html>
