@@ -12,13 +12,13 @@ export default {
     }
   },
   mounted () {
-    this.columns.forEach(item => {
+    this.formatColumns = this.columns.map(item => {
       if (item.edit) {
         item.render = (h, { row, column, index }) => {
           return this.currentIndex !== index
             ? <div>
               <span>{row[column['key']]}</span>
-              <i-button size="small" on-click={this.edit.bind(this, index)}>编辑</i-button>
+              <i-button size="small" on-click={() => this.edit(index)}>编辑</i-button>
             </div>
             : <div class="input-wrapper">
               <i-input type="text" value={row[column['key']]} on-input={(value) => this.input(value)}/>
@@ -26,7 +26,7 @@ export default {
             </div>
         }
       }
-      this.formatColumns.push(item)
+      return item
     })
   },
   methods: {
