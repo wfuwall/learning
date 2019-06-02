@@ -13,6 +13,10 @@ const router = new Router({
     {
       path: '/functioncomponent',
       component: () => import('../views/FunctionComponent.vue')
+    },
+    {
+      path: '/iviewtable',
+      component: () => import('../views/IviewTable.vue')
     }
   ]
 })
