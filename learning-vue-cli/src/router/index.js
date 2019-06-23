@@ -17,6 +17,10 @@ const router = new Router({
     {
       path: '/iviewtable',
       component: () => import('../views/IviewTable.vue')
+    },
+    {
+      path: '/tree',
+      component: () => import('../views/Tree.vue')
     }
   ]
 })
