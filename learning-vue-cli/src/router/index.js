@@ -21,6 +21,10 @@ const router = new Router({
     {
       path: '/tree',
       component: () => import('../views/Tree.vue')
+    },
+    {
+      path: '/date',
+      component: () => import('../views/Date.vue')
     }
   ]
 })
