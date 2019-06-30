@@ -2,7 +2,7 @@
     <el-tree
       :data="allData"
       :props="defaultProps"
-      default-expand-all
+      :default-expand-all="false"
       :render-content="renderContent"
       :expand-on-click-node="false"
     ></el-tree>
