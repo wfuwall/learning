@@ -9,11 +9,11 @@ export default {
   components: {
     DatePicker
   },
-  data() {
+  data () {
     return {
       now: new Date()
     }
   }
-};
+}
 </script>
 <style scoped lang='stylus'></style>
