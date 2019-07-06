@@ -1,6 +1,7 @@
 <template>
   <div>
-    <date-picker :value="now"></date-picker>
+    <!-- v-model 其实就是 :value 和 @input的语法糖 -->
+    <date-picker v-model="now"></date-picker>
   </div>
 </template>
 <script>
