@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>websocket+canvas实现弹幕效果</title>
+  <link rel="stylesheet" href="./reset.css">
+  <style>
+    .container{
+      margin: 20px auto;
+    }
+    .content{
+      position: relative;
+      margin: 0 auto;
+      height: 360px;
+      width: 640px;
+    }
+    .title{
+      font-size: 28px;
+      color: #333;
+      text-align: center;
+    }
+    .canvas{
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .ctrl{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .button{
+      margin: 0 30px 0 10px;
+    }
+    .color{
+      margin-right: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">websocket+canvas实现弹幕效果</h1>
+    <div class="content">
+      <video src="./video.mp4" id="video" controls width="640" height="360"></video>
+      <canvas class="canvas" id="canvas"></canvas>
+    </div>
+    <div class="ctrl">
+      <input type="text" id="text"/>
+      <button class="button" id="add">添加弹幕</button>
+      <input type="color" class="color" id="color"/>
+      <input type="range" max="40" min="20" id="range"/>
+    </div>
+  </div>
+  <script>
+    let data = [
+      { value: '小姐姐真好看', time: 0, speed: 2, color: 'red', fontSize: 20 },
+      { value: '不错不错，真心好看', time: 1 }
+    ]
+    const $ = document.querySelector.bind(document)
+    const canvas = $('#canvas')
+    const video = $('#video')
+    const add = $('#add')
+    let canvasBarrage
+    // 链接 websocket
+    const socket = new WebSocket('ws://localhost:3000')
+    // 封装CanvasBarrages弹幕类
+    class CanvasBarrages{
+      constructor(canvas, video, options) {
+        if (!canvas || !video) return
+        this.canvas = canvas
+        this.video = video
+        // 初始化弹幕的默认属性
+        const defaultOptions = {
+          fontSize: 20,
+          color: 'white',
+          speed: 2,
+          opacity: 0.3,
+          data: []
+        }
+        // 合并对象，并将属性全部挂载到实例上
+        Object.assign(this, defaultOptions, options)
+        // 获取画布并设置其宽高
+        this.context = canvas.getContext('2d')
+        this.canvas.width = video.clientWidth
+        this.canvas.height = video.clientHeight - 70
+        // 是否暂停，默认是暂停播放，表示不渲染弹幕
+        this.isPaused = true
+        // 存放所有弹幕，数组里每一项都是Barrage类的实例
+        this.barrages = this.data.map(item => new Barrage(item, this))
+        // 渲染所有弹幕
+        this.render()
+      }
+      // 渲染所有弹幕的方法，需要用到requestAnimationFrame
+      render () {
+        // 第一次先清空画布，并执行渲染弹幕，如果没有暂停就继续渲染
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        this.renderBarrage()
+        // requestAnimationFrame(callback) 告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画
+        if (!this.isPaused) {
+          requestAnimationFrame(this.render.bind(this))
+        }
+      }
+      // 增加一条弹幕
+      add (obj) {
+        this.barrages.push(new Barrage(obj, this))
+      }
+      // 重新初始化弹幕
+      reset () {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        const currentTime = this.video.currentTime
+        this.barrages.forEach(barrage => {
+          barrage.flag = false
+          if (currentTime <= barrage.time) {
+            barrage.isInit = false
+          } else {
+            barrage.flag = true
+          }
+        })
+      }
+      // 渲染弹幕
+      renderBarrage () {
+        // 将数组中的弹幕一条条取出，判断时间和视频时间一致就渲染此条弹幕
+        const currentTime = this.video.currentTime
+        this.barrages.forEach(barrage => {
+          if (!barrage.flag && barrage.time <= currentTime) {
+            // 第一次先去初始化，后绘制，之后每次改变位置就行
+            if (!barrage.isInit) {
+              barrage.init()
+              barrage.isInit = true
+            }
+            barrage.x -= barrage.speed
+            // 渲染弹幕
+            barrage.render()
+            // 弹幕移出视频后，做停止绘制的标记
+            if (barrage.x * -1 >= barrage.width ) {
+              barrage.flag = true
+            }
+          }
+        })
+      }
+    }
+
+    // 封装Barrage类, 是创造每条弹幕实例的类
+    class Barrage{
+      constructor (obj, ctx) {
+        this.value = obj.value // 弹幕的内容
+        this.time = obj.time // 弹幕的时间
+        this.ctx = ctx // 父类的this
+        this.obj = obj
+      }
+      // 初始化函数
+      init() {
+        this.color = this.obj.color || this.ctx.color
+        this.fontSize = this.obj.fontSize || this.ctx.fontSize
+        this.opacity = this.obj.opacity || this.ctx.opacity
+        this.speed = this.obj.speed || this.ctx.speed
+        // 求自己的宽度，目的是用来判断是否还在视频宽度内，从而判断是否还需要继续绘制
+        let span = document.createElement('span')
+        span.innerHTML = this.value
+        span.style.font = this.fontSize + 'px "Microsoft YaHei"'
+        span.style.position = 'absolute'
+        document.body.appendChild(span)
+        this.width =  span.clientWidth // 记录弹幕的宽度
+        document.body.removeChild(span)
+        // 弹幕出现的位置
+        this.x = this.ctx.canvas.width
+        this.y = this.ctx.canvas.height * Math.random()
+        this.y < this.fontSize && (this.y = this.fontSize)
+        this.y > this.ctx.canvas.height - this.fontSize && (this.y = this.ctx.canvas.height - this.fontSize)
+      }
+      // 渲染弹幕,将自己绘制到画布上
+      render () {
+        this.ctx.context.font = this.fontSize + 'px "Microsoft YaHei"'
+        this.ctx.context.fillStyle = this.color
+        this.ctx.context.fillText(this.value, this.x, this.y)
+      }
+    }
+    video.addEventListener('play', function () {
+      canvasBarrage.isPaused = false
+      canvasBarrage.render()
+    })
+    video.addEventListener('pause', function () {
+      canvasBarrage.isPaused = true
+    })
+    add.addEventListener('click', function () {
+      const time = video.currentTime
+      const value = $('#text').value
+      const color = $('#color').value
+      const fontSize = $('#range').value
+      const obj = {
+        value,
+        time,
+        color,
+        fontSize
+      }
+      // 发送给 redis 数据库添加弹幕
+      socket.send(JSON.stringify(obj))
+    })
+    // 拉动进度条，弹幕重新初始化
+    video.addEventListener('seeked', function () {
+      canvasBarrage.reset()
+    })
+    // socket接收数据
+    socket.onopen = function () {
+      socket.onmessage = function (e) {
+        const result = JSON.parse(e.data)
+        if (result.type === 'INIT'){
+          canvasBarrage = new CanvasBarrages(canvas, video, {
+            data: result.data
+          })
+        } else if (result.type === 'ADD') {
+          canvasBarrage.add(result.data)
+        }
+      }
+    }
+  </script>
+</body>
+</html>
