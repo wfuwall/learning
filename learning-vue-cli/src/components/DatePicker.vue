@@ -7,12 +7,12 @@
       :class="{'active': isVisible}"/>
     <div class="pannel" v-if="isVisible">
       <div class="pannel-nav">
-        <span>&lt;</span>
-        <span>&lt;&lt;</span>
-        <span>xxx年</span>
-        <span>xxx月</span>
-        <span>&gt;&gt;</span>
-        <span>&gt;</span>
+        <span @click="prevYear">&lt;&lt;</span>
+        <span @click="prevMonth">&lt;</span>
+        <span>{{yearMonthDay.year}}年</span>
+        <span>{{yearMonthDay.month + 1}}月</span>
+        <span @click="nextMonth">&gt;</span>
+        <span @click="nextYear">&gt;&gt;</span>
       </div>
       <div class="pannel-content">
         <div class="pannel-content-days">
@@ -24,6 +24,7 @@
               class="pannel-content-days-rows-cell"
               v-for="cell in 7"
               :key="cell"
+              @click="bindSelectDay(cycleDays[(row-1) * 7 + (cell -1)])"
               :class="{'current-month': isCurrentMonth(cycleDays[(row-1) * 7 + (cell -1)]), 'current-day': isCurrentDay(cycleDays[(row-1) * 7 + (cell -1)])}">
                 {{cycleDays[(row-1) * 7 + (cell -1)].getDate()}}
             </span>
@@ -65,19 +66,25 @@ export default {
     }
   },
   data () {
+    let {year, month, day} = utilsDate.getYearMonthDay(this.value)
     return {
       isVisible: false, // 默认选择区域不可见
-      weeks: ['日', '一', '二', '三', '四', '五', '六']
+      weeks: ['日', '一', '二', '三', '四', '五', '六'],
+      yearMonthDay: {
+        year,
+        month,
+        day
+      }
     }
   },
   computed: {
     currentTime () { // 格式化传过来的当前的时间
-      const { year, month, day } = utilsDate.getYearMonthDay(this.value)
+      const { year, month, day } = this.yearMonthDay
       return `${year}-${month + 1}-${day}`
     },
     cycleDays () { // 计算出当月循环的日期
       // 首先获取当前月的1号是周几
-      const { year, month } = utilsDate.getYearMonthDay(this.value)
+      const { year, month } = this.yearMonthDay
       // 获取指定年月1号是周几
       const currentFirstDay = utilsDate.getDate(year, month, 1)
       const currentWeek = currentFirstDay.getDay()
@@ -98,14 +105,47 @@ export default {
       this.isVisible = false
     },
     isCurrentMonth (time) { // 判断是否是当月
-      const { year, month } = utilsDate.getYearMonthDay(this.value)
+      const { year, month } = this.yearMonthDay
       const { year: y, month: m } = utilsDate.getYearMonthDay(time)
       return year === y && month === m
     },
     isCurrentDay (time) { // 判断是否是当月当天
-      const { year, month, day } = utilsDate.getYearMonthDay(this.value)
+      const { year, month, day } = this.yearMonthDay
       const { year: y, month: m, day: d } = utilsDate.getYearMonthDay(time)
       return year === y && month === m && day === d
+    },
+    bindSelectDay (time) { // 点击日历
+      this.yearMonthDay = utilsDate.getYearMonthDay(time)
+      this.$emit('input', time)
+      this.blur()
+    },
+    prevYear () { // 上一年
+      const { year, month, day } = this.yearMonthDay
+      // 获取指定年月日的时间
+      const date = utilsDate.getDate(year, month, day)
+      date.setYear(year-1)
+      this.yearMonthDay = utilsDate.getYearMonthDay(date)
+    },
+    nextYear () { // 下一年
+      const { year, month, day } = this.yearMonthDay
+      // 获取指定年月日的时间
+      const date = utilsDate.getDate(year, month, day)
+      date.setYear(year + 1)
+      this.yearMonthDay = utilsDate.getYearMonthDay(date)
+    },
+    prevMonth () { // 上个月
+      const { year, month, day } = this.yearMonthDay
+      // 获取指定年月日的时间
+      const date = utilsDate.getDate(year, month, day)
+      date.setMonth(month - 1)
+      this.yearMonthDay = utilsDate.getYearMonthDay(date)
+    },
+    nextMonth () { // 下个月
+      const { year, month, day } = this.yearMonthDay
+      // 获取指定年月日的时间
+      const date = utilsDate.getDate(year, month, day)
+      date.setMonth(month + 1)
+      this.yearMonthDay = utilsDate.getYearMonthDay(date)
     }
   }
 }
@@ -146,6 +186,12 @@ export default {
     height: 32px;
     user-select: none;
     box-sizing: border-box;
+    span{
+      cursor: pointer;
+    }
+    span:nth-child(3), span:nth-child(4) {
+      cursor: default;
+    }
   }
   &-content{
     &-weeks{
@@ -170,6 +216,7 @@ export default {
           text-align: center;
           color: #c0c4cc;
           box-sizing: border-box;
+          cursor: pointer;
           &.current-month{
             color: #606266;
           }
